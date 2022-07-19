@@ -4,11 +4,11 @@ import json
 from jinja2 import Environment, FileSystemLoader
 import os
 
-json_str = _jsonnet.evaluate_file("config.jsonnet")
-layout = json.loads(json_str)
-
 class DashboardServer(BaseHTTPRequestHandler):
     def gethtml(self):
+        json_str = _jsonnet.evaluate_file("config.jsonnet")
+        layout = json.loads(json_str)
+
         env = Environment( loader = FileSystemLoader(os.path.dirname(os.path.abspath(__file__))))
         template = env.get_template("dashboard.html")
         return template.render(layout=layout)

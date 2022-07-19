@@ -8,22 +8,29 @@
     <body>
     <div class="container">
         {% set ns = namespace(colnum=0, rownum=0) %}
-        {% for entry in layout %}
+        {% for entry in layout[1:] %}
             {% if entry.type != "endcolumn" %}
             {% if entry.type == "title" %}
                 <div style="display: grid;
                             grid-row: {{ns.rownum|int + 1}};
                             grid-column: {{ns.colnum + 1}} / {{ns.colnum + 3}};">
             {% else %}
-                {% if ns.rownum|round(0, "floor")|int == ns.rownum %}
-                <div style="display: grid;
-                            grid-row: {{ns.rownum + 1 + ns.colnum}};
-                            grid-column: {{ns.colnum + 1}};">
+                {% if entry.type == "dashentry" or entry.type == "smalldashentry" %}
+                    {% if ns.rownum|round(0, "floor")|int == ns.rownum %}
+                    <div style="display: grid;
+                                grid-row: {{ns.rownum|int + 1}};
+                                grid-column: {{ns.colnum + 1}};">
+                    {% else %}
+                    <div style="display: grid;
+                                grid-row: {{ns.rownum|round(0, "floor")|int + 1}};
+                                grid-column: {{ns.colnum + 1}};
+                                justify-items: end;">
+                    {% endif %}
                 {% else %}
-                <div style="display: grid;
-                            grid-row: {{ns.rownum|round(0, "floor")|int + 1 + ns.colnum}};
-                            grid-column: {{ns.colnum + 1}};
-                            justify-items: end;">
+                    {% set ns.rownum = ns.rownum|round(0, "ceil")|int %}
+                    <div style="display: grid;
+                                grid-row: {{ns.rownum + 1}};
+                                grid-column: {{ns.colnum + 1}};">
                 {% endif %}
             {% endif %}
             {% endif %}
@@ -32,8 +39,12 @@
                         <p style="font-size: 20px;" class="subtext">{{entry.subtext}}</p>
                         <br>
                         {% set ns.rownum = ns.rownum + 1 %}
-                    {% elif entry.type == "subsection" %}
+                    {% elif entry.type == "section" %}
                         <h3>{{entry.name}}</h3>
+                        <p class="subtext">{{entry.subtext}}</p>
+                        {% set ns.rownum = ns.rownum + 1 %}
+                    {% elif entry.type == "subsection" %}
+                        <h5>{{entry.name}}</h5>
                         {% set ns.rownum = ns.rownum + 1 %}
                     {% elif entry.type == "dashentry" %}
                         <a class="dashentry" href="{{entry.url}}" target="_blank">
@@ -45,11 +56,18 @@
                                 </div>
                         </a>
                         {% set ns.rownum = ns.rownum + 0.5 %}
+                    {% elif entry.type == "smalldashentry" %}
+                        <a class="dashentry" href="{{entry.url}}" target="_blank" style="margin: 0; padding: 3px;">
+                            <img src="{{entry.icon}}" alt="entry icon" style="width:17px; vertical-align: middle;">
+                            <p style="font-size: 15px;" class="entryname">{{entry.name}}</p>
+                        </a>
+                        {% set ns.rownum = ns.rownum + 0.5 %}
                     {% elif entry.type == "separator" %}
-                        <!-- <div class="separator"></div> -->
+                        <br>
+                        {% set ns.rownum = ns.rownum + 1 %}
                     {% elif entry.type == "endcolumn" %}
                     {% set ns.colnum = ns.colnum + 1 %}
-                    {% set ns.rownum = 0 %}
+                    {% set ns.rownum = 1 %}
                     {% endif %}
                 
                 {% if entry.type != "endcolumn" %}
@@ -85,7 +103,13 @@
         color: {{layout[0].sectionname}};
     }
 
-    h1, h3 {
+    h5 {
+        font-size: 20px;
+        margin: 0;
+        color: {{layout[0].sectionname}};
+    }
+
+    h1, h3, h5 {
         font-weight: bold;
     }
 
@@ -111,13 +135,14 @@
 
     .dashentry {
         width: 47%;
-        padding: 5px;
+        padding: 6px;
         color: {{layout[0].entryname}};
         background-color: {{layout[0].entrybackground}};
         margin-bottom: 10px;
         cursor: pointer;
         z-index: 1;
         text-decoration: none;
+        border-radius: 5px;
     }
     </style>
 </html>
