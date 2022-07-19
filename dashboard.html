@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Dashboard</title>
+    </head>
+    <body>
+    <div class="container">
+        {% set ns = namespace(colnum=0, rownum=0) %}
+        {% for entry in layout %}
+            {% if entry.type != "endcolumn" %}
+            {% if entry.type == "title" %}
+                <div style="display: grid;
+                            grid-row: {{ns.rownum|int + 1}};
+                            grid-column: {{ns.colnum + 1}} / {{ns.colnum + 3}};">
+            {% else %}
+                {% if ns.rownum|round(0, "floor")|int == ns.rownum %}
+                <div style="display: grid;
+                            grid-row: {{ns.rownum + 1 + ns.colnum}};
+                            grid-column: {{ns.colnum + 1}};">
+                {% else %}
+                <div style="display: grid;
+                            grid-row: {{ns.rownum|round(0, "floor")|int + 1 + ns.colnum}};
+                            grid-column: {{ns.colnum + 1}};
+                            justify-items: end;">
+                {% endif %}
+            {% endif %}
+            {% endif %}
+                    {% if entry.type == "title" %}
+                        <h1>{{entry.name}}</h1>
+                        <p style="font-size: 20px;" class="subtext">{{entry.subtext}}</p>
+                        <br>
+                        {% set ns.rownum = ns.rownum + 1 %}
+                    {% elif entry.type == "subsection" %}
+                        <h3>{{entry.name}}</h3>
+                        {% set ns.rownum = ns.rownum + 1 %}
+                    {% elif entry.type == "dashentry" %}
+                        <a class="dashentry" href="{{entry.url}}" target="_blank">
+                                <img src="{{entry.icon}}" alt="entry icon" style="width:20px; padding-bottom: 20px;">
+                                <div style="display: inline-block;">
+                                    <p class="entryname">{{entry.name}}</p>
+                                    <br>
+                                    <p class="subtext">{{entry.description}}</p>
+                                </div>
+                        </a>
+                        {% set ns.rownum = ns.rownum + 0.5 %}
+                    {% elif entry.type == "separator" %}
+                        <!-- <div class="separator"></div> -->
+                    {% elif entry.type == "endcolumn" %}
+                    {% set ns.colnum = ns.colnum + 1 %}
+                    {% set ns.rownum = 0 %}
+                    {% endif %}
+                
+                {% if entry.type != "endcolumn" %}
+                </div>
+                {% endif %}
+            {% endfor %}
+    </div>
+    </body>
+    <style>
+    html {
+        background-color: {{layout[0].background}};
+        font-family: Verdana, Geneva, sans-serif;
+    }
+
+    .container {
+        display: grid;
+        align-items: flex-end;
+        row-gap: 10px;
+        column-gap: 5%;
+    }
+
+    h1 {
+        font-size: 50px;
+        margin-bottom: 5px;
+        margin-top: 10px;
+        color: {{layout[0].title}};
+    }
+
+    h3 {
+        font-size: 25px;
+        margin: 0;
+        margin-top: 10px;
+        color: {{layout[0].sectionname}};
+    }
+
+    h1, h3 {
+        font-weight: bold;
+    }
+
+    .entryname {
+        font-size: 20px;
+        margin: 0;
+        display: inline;
+    }
+
+    .separator {
+        width: 40%;
+        height: 2px;
+        border: 2px solid aqua;
+    }
+
+    .subtext {
+        font-size: 14px;
+        color: {{layout[0].subtext}};
+        font-style: italic;
+        margin: 0;
+        display: inline;
+    }
+
+    .dashentry {
+        width: 47%;
+        padding: 5px;
+        color: {{layout[0].entryname}};
+        background-color: {{layout[0].entrybackground}};
+        margin-bottom: 10px;
+        cursor: pointer;
+        z-index: 1;
+        text-decoration: none;
+    }
+    </style>
+</html>
