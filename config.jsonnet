@@ -1,5 +1,5 @@
-local Title(name="My Dashboard", subtext="running on new server", showdate=false, showtime=false) = {
-    type: "title", name: name, subtext: subtext, showdate: showdate, showtime: showtime
+local Title(name="My Dashboard", subtext="running on new server", showdate=false) = {
+    type: "title", name: name, subtext: subtext, showdate: showdate
 };
 local DashEntry(name="Dashboard Entry", description="example description", url="https://localhost/", icon="") = {
     type: "dashentry", name: name, description: description, url: url, icon: if icon == "" then url + "/favicon.ico" else icon
@@ -25,7 +25,7 @@ Notes:
         title: "#FFFFFF", sectionname: "#BBBBBB",
         entryname: "#FFFFFF", subtext: "#808080"
     },
-    Title(),
+    Title(showdate=true),
     Section(name="Search Engines"),
     DashEntry(name="Google", description="search the web", url="https://google.com/", icon="https://google.com/favicon.ico"),
     DashEntry(name="DuckDuckGo", description="search the web (privatly)", url="https://duckduckgo.com/", icon="https://duckduckgo.com/favicon.ico"),

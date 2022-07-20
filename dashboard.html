@@ -2,7 +2,6 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Dashboard</title>
     </head>
     <body>
@@ -35,8 +34,32 @@
             {% endif %}
             {% endif %}
                     {% if entry.type == "title" %}
-                        <h1>{{entry.name}}</h1>
-                        <p style="font-size: 20px;" class="subtext">{{entry.subtext}}</p>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <h1>{{entry.name}}</h1>
+                                <p style="font-size: 20px;" class="subtext">{{entry.subtext}}</p>
+                            </div>
+                            {% if entry.showdate %}
+                            <div style="margin-top: 10px; text-align: right;">
+                                <h2 id="greeting" style="margin: 0; margin-bottom: 5px; float: right; font-size: 45px;"></h2>
+                                <h2 id="currenttime" class="subtext" style="display: block; font-weight: normal; font-size: 20px; margin: 0;"></h2>
+                                <script>
+                                    var fancydate = new Date().toLocaleDateString('en-us', 
+                                        { weekday:"long", year:"numeric", month:"long", day:"numeric"});
+                                    var timeofday = "";
+                                    if (new Date().getHours() > 0 && new Date().getHours() < 12) {
+                                        timeofday = "Morning";
+                                    } else if (new Date().getHours() >= 12 && new Date().getHours() < 18) {
+                                        timeofday = "Afternoon";
+                                    } else {
+                                        timeofday = "Evening"
+                                    }
+                                    document.getElementById("greeting").innerText = "Good " + timeofday + "!";
+                                    document.getElementById("currenttime").innerText = "It's " + fancydate;
+                                </script>
+                            </div>
+                            {% endif %}
+                        </div>
                         <br>
                         {% set ns.rownum = ns.rownum + 1 %}
                     {% elif entry.type == "section" %}
@@ -58,8 +81,10 @@
                         {% set ns.rownum = ns.rownum + 0.5 %}
                     {% elif entry.type == "smalldashentry" %}
                         <a class="dashentry" href="{{entry.url}}" target="_blank" style="margin: 0; padding: 3px;">
-                            <img src="{{entry.icon}}" alt="entry icon" style="width:17px; vertical-align: middle;">
-                            <p style="font-size: 15px;" class="entryname">{{entry.name}}</p>
+                            <div style="width: fit-content; margin: auto;">
+                                <img src="{{entry.icon}}" alt="entry icon" style="width:17px; vertical-align: middle;">
+                                <p style="font-size: 15px;" class="entryname">{{entry.name}}</p>
+                            </div>
                         </a>
                         {% set ns.rownum = ns.rownum + 0.5 %}
                     {% elif entry.type == "separator" %}
@@ -69,7 +94,6 @@
                     {% set ns.colnum = ns.colnum + 1 %}
                     {% set ns.rownum = 1 %}
                     {% endif %}
-                
                 {% if entry.type != "endcolumn" %}
                 </div>
                 {% endif %}
@@ -90,9 +114,14 @@
     }
 
     h1 {
+        width: fit-content;
         font-size: 50px;
         margin-bottom: 5px;
         margin-top: 10px;
+        color: {{layout[0].title}};
+    }
+
+    h2 {
         color: {{layout[0].title}};
     }
 
